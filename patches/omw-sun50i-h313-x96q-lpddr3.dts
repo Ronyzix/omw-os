@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * OMW OS minimal board description for the X96Q H313 LPDDR3 profile.
+ * Adapted from the public X96Q LPDDR3 board mapping; provisional until HW test.
+ * First bring-up enables only UART0 and removable SD on MMC0.
+ * No CPU OPP/DVFS, eMMC, HDMI, Wi-Fi, Bluetooth or Ethernet nodes yet.
+ */
+/dts-v1/;
+#include "sun50i-h616.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	model = "OMW OS X96Q H313 LPDDR3 minimal bring-up";
+	compatible = "hechuang,x96-q", "allwinner,sun50i-h616";
+
+	aliases {
+		serial0 = &uart0;
+		mmc0 = &mmc0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&mmc0 {
+	broken-cd;
+	bus-width = <4>;
+	status = "okay";
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_ph_pins>;
+	status = "okay";
+};

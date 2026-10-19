@@ -38,4 +38,5 @@ install -m 0644 "$BIN" "$OUT/u-boot-sunxi-with-spl-x96q-lpddr3.bin"
   echo "Firmware SHA-256: $(sha256sum "$OUT/u-boot-sunxi-with-spl-x96q-lpddr3.bin" | awk '{print $1}')"
   echo "Firmware bytes: $(stat -c %s "$OUT/u-boot-sunxi-with-spl-x96q-lpddr3.bin")"
 } | tee "$OUT/manifest.txt"
+(cd "$OUT" && sha256sum u-boot-sunxi-with-spl-x96q-lpddr3.bin > SHA256SUMS)
 file "$OUT/u-boot-sunxi-with-spl-x96q-lpddr3.bin"

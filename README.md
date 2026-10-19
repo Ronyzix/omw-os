@@ -1,29 +1,36 @@
 # OMW OS — projeto independente
 
-Este diretório inicia o novo OMW sem derivar uma imagem de distribuição pronta. As imagens antigas em `/home/ubuntu/omw` são somente evidência técnica; nenhum artefato de build deste projeto deve usar um `.img`, rootfs ou sistema instalado anterior como base.
+Repositório privado: [Ronyzix/omw-os](https://github.com/Ronyzix/omw-os).
 
-## Princípio de construção
+Este projeto não deriva de uma imagem de distribuição pronta. As imagens antigas em `/home/ubuntu/omw` foram consultadas somente como evidência técnica; nenhum `.img`, rootfs instalado ou framework Armbian entra no build. O bootloader, kernel, device tree, initramfs e a imagem de ensaio são compilados/montados a partir de fontes e configurações registradas no projeto.
 
-OMW terá configuração de boot, seleção de kernel, device tree, initramfs, root filesystem, serviços e interface sob controle do projeto. Vamos construir a imagem SD a partir de fontes e componentes escolhidos explicitamente, com manifesto e hashes reproduzíveis. Não vamos copiar o rootfs Debian/Armbian nem modificar uma imagem pronta.
+## O que “do zero” significa aqui
 
-“Do zero” não significa reescrever o BootROM físico, que vem dentro do SoC. Para chegar a um Linux na placa, OMW ainda precisará de código executável compatível com a cadeia Allwinner — por exemplo SPL/U-Boot e, para o caminho ARM64 suportado, Trusted Firmware-A — além de um kernel. Esses componentes podem ser compilados a partir do código-fonte e configurados/alterados para OMW; não são uma distribuição. Nenhuma escrita em eMMC/NAND será feita pelo processo de desenvolvimento.
+O BootROM físico do Allwinner H313 não é substituível: é parte do SoC. Para iniciar Linux, o projeto precisa de software compatível com a cadeia Allwinner, como SPL/U-Boot e Trusted Firmware-A, e de kernel/device tree. OMW compila esses componentes a partir dos fontes e configura o perfil da placa; isso não usa um sistema operacional ou rootfs pronto. O tratamento de DRAM LPDDR3 parte de uma configuração pública específica de board que está identificada e registrada no projeto; precisa ser confirmada no hardware físico.
 
-## Primeiro marco
+## Progresso atual
 
-**M0 — SD bring-up seguro:** produzir a partir do código-fonte um bootloader mínimo próprio para o perfil exato LPDDR3 v1.3, gravável em cartão de teste, que alcance uma saída observável (preferencialmente UART; HDMI/LED como sinais auxiliares). M0 não inclui rootfs, desktop ou instalação interna.
+- **M0 — firmware:** TF-A v2.14.0 e U-Boot v2026.07 compilados para o perfil X96Q LPDDR3 v1.3. Build e hashes em [milestone M0](docs/milestone-m0-firmware.md).
+- **M1 — kernel/initramfs/imagem de ensaio:** Linux v6.18.1, DTS OMW mínimo (UART0 + MMC0), BusyBox estático e uma imagem raw de 144 MiB montada em arquivo sandbox. [Relatório M1 e checksums](docs/milestone-m1-kernel-image.md).
+- A imagem raw teve seu MBR/partição FAT, posição do U-Boot e conteúdo dos arquivos verificados offline; a repetição do empacotamento produziu o mesmo SHA-256.
+- **Não foi testada na TV Box e não foi emulada.** O sandbox não tem QEMU de sistema nesta sessão. Logo não alegamos que inicialize, nem que preserve comprovadamente o Android em um boot real, embora nenhum código atual escreva no armazenamento interno.
+- O DTS mínimo não habilita HDMI, Wi-Fi, Ethernet, Bluetooth nem MMC2/eMMC. O initramfs abre um shell pela UART serial; para primeiro teste físico é necessário console serial compatível. Ainda não há instalador para SD nem rootfs persistente.
 
-Não considerar M0 aprovado até que a imagem seja verificada antes da gravação e o boot seja observado na própria TV Box. Uma compilação bem-sucedida no sandbox não prova que a DRAM ou o boot físico funcionam.
+## Build
 
-## Documentos
+Com as fontes fixadas em `source-lock.txt` e as ferramentas de compilação instaladas, executar nesta ordem:
 
-- [Inventário da cadeia de boot e evidências](docs/boot-chain-inventory.md)
-- [Plano de construção e critérios de avanço](docs/bring-up-plan.md)
-- [Marco M0: firmware compilado, boot físico pendente](docs/milestone-m0-firmware.md)
+```sh
+scripts/build-firmware.sh
+scripts/build-kernel.sh
+scripts/build-initramfs.sh
+scripts/build-sd-test-image.sh
+```
 
-## Estado atual
+A imagem resultante é criada como arquivo regular sob `out/sd-test/`. Nenhum dos scripts grava em `/dev/mmc*`, cartão físico ou armazenamento interno.
 
-O primeiro firmware SPL/U-Boot para o perfil LPDDR3 foi compilado com sucesso a partir das fontes upstream fixadas. Ainda não existe imagem completa do OMW e o firmware não foi testado na TV Box; o próximo passo é validar o boot em SD de teste, idealmente com UART, antes de adicionar kernel ou rootfs.
+## Segurança e próximos marcos
 
-## Segurança de armazenamento
+O alvo declarado é uma única Proeletronic X96Q H313 com LPDDR3 v1.3. Não presumir que X96Q v5.1 DDR3L ou caixa Prosmart sejam a mesma placa. Próximo marco: teste controlado em SD separado, com UART, verificando SPL/DRAM, U-Boot, kernel e initramfs. Só depois estabilizar MMC/rootfs, acrescentar saída HDMI e periféricos e trabalhar na experiência de instalação. Não grave a imagem atual como se fosse release pronta.
 
-O alvo é um cartão SD removível de teste. Os scripts futuros terão como padrão recusar dispositivos com características de eMMC, listar e exigir confirmação do destino, e nunca instalar U-Boot, kernel ou rootfs em `/dev/mmcblk*` interno. A regra ainda será testada; não há ferramenta de gravação publicada neste estágio.
+Veja também o [inventário de boot](docs/boot-chain-inventory.md) e o [plano de bring-up](docs/bring-up-plan.md).
