@@ -1,0 +1,5 @@
+/src/u-boot/
+/src/trusted-firmware-a/
+/out/firmware/*.bin
+/out/firmware/SHA256SUMS
+/out/firmware/manifest.txt

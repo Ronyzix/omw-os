@@ -1,0 +1,5 @@
+# Pinned firmware source revisions
+U-Boot tag=v2026.07
+U-Boot commit=ece349ade2973e220f524ce59e59711cc919263f
+TF-A tag=v2.14.0
+TF-A commit=1d5aa939bc8d3d892e2ed9945fa50e36a1a924cc
