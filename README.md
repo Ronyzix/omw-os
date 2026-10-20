@@ -48,3 +48,10 @@ Foram criados dois conceitos visuais originais para orientar o futuro ambiente e
 O chip Wi-Fi da unidade física ainda não foi identificado. O arquivo de configuração corrente do Armbian `config/boards/x96q.tvb` ativa a extensão UWE5622/AW859A, enquanto há relatos e builds com módulos/necessidades diferentes; isso não comprova o chip da Proeletronic deste projeto. Veja [pesquisa de hardware Wi-Fi](docs/wifi-hardware-research.md). Por segurança, o DTS OMW continua sem nó Wi-Fi e não promete conectividade interna até haver evidência da placa.
 
 O armazenamento do sandbox está com aproximadamente 3,5 GiB livres (verificação de 2026-10-20). Por isso, não foi iniciada uma compilação completa ou de grande porte nesta etapa.
+
+
+## Conceito da tela inicial e bloqueio gráfico
+
+O [conceito da tela inicial OMW](assets/omw-home-screen-concept.png) mostra menu Início, Arquivos, Internet, Configurações, Desligar e atalhos para YouTube/Rave, com foco em leitura à distância e navegação por controle. É uma **imagem de referência**, não captura de uma interface executável.
+
+A GUI ainda depende da saída DRM/KMS/HDMI. O kernel fixado v6.18.1 não traz os nós H616 de display, e a proposta pública encontrada foi rejeitada por problemas na modelagem do hardware; o teste alternativo divulgado foi em H618, não na X96Q H313. Não habilitei essas patches nem gerei uma imagem nova. Os detalhes e critérios de teste estão em [hdmi-bring-up.md](docs/hdmi-bring-up.md).

@@ -26,9 +26,11 @@ Próximo passo físico: usar cartão removível de teste separado e console UART
 
 Depois do console e do shell mínimo confirmados, ligar subsistemas progressivamente com logs: reguladores/PMIC, persistência de MMC apenas para a partição SD, HDMI, USB e Ethernet. Cada node de DTS precisa ser validado contra a placa e contra o kernel upstream, não apenas copiado de variante próxima. Wi‑Fi, áudio, vídeo acelerado e desktop ficam para depois; histórico anterior de Wi‑Fi não é evidência de funcionamento nesta imagem nova.
 
+**Bloqueio de HDMI:** o kernel fixado v6.18.1 não tem nós de display H616 no DTS upstream. Uma proposta HDMI de 2026 foi rejeitada por modelagem DE33 incorreta, e o teste alternativo publicado é em H618. Não copiar o patch rejeitado nem habilitar HDMI na placa X96Q até portar a modelagem aceita/atual do driver e verificar a revisão H313. Manter a imagem serial como recuperação e consultar `docs/hdmi-bring-up.md`.
+
 ## M4 — sistema userspace OMW
 
-Só depois de kernel/SD estáveis: estruturar rootfs próprio de forma reproduzível, sem desembrulhar/copiar imagem pronta. Escolher explicitamente libc, init, ferramentas, atualização e persistência. Em seguida, preparar configuração em português, menu inicial e interface gráfica leve, apps e medidas de recuperação.
+Só depois de kernel/SD estáveis: estruturar rootfs próprio de forma reproduzível, sem desembrulhar/copiar imagem pronta. Escolher explicitamente libc, init, ferramentas, atualização e persistência. A interface gráfica OMW só começa quando o DRM/KMS inicializar a saída HDMI e reportar EDID/modos; até lá, trabalhar apenas na direção visual/protótipo e manter o menu serial de recuperação. Em seguida, preparar configuração em português, menu inicial e interface gráfica leve, apps e medidas de recuperação.
 
 ## Regras permanentes de segurança
 
