@@ -14,7 +14,7 @@ O BootROM físico do Allwinner H313 não é substituível: é parte do SoC. Para
 - **M1 — kernel/initramfs/imagem de ensaio:** Linux v6.18.1, DTS OMW mínimo (UART0 + MMC0), BusyBox estático e imagem raw de 144 MiB montada em arquivo sandbox. [Relatório M1 e checksums](docs/milestone-m1-kernel-image.md).
 - **QEMU genérico:** kernel e initramfs inicializaram juntos em `virt` ARM64 genérico e abriram o shell em RAM. Automatizado por `scripts/test-qemu-initramfs.sh`.
 - A imagem raw teve MBR/partição FAT, posição do U-Boot e conteúdo dos arquivos verificados offline; repetir o empacotamento produziu o mesmo SHA-256.
-- **Ainda não testado na TV Box.** O QEMU usado não modela Allwinner H313, DRAM LPDDR3, U-Boot nem periféricos da X96Q; logo não comprova boot na placa. O DTS mínimo não habilita HDMI, Wi-Fi, Ethernet, Bluetooth nem MMC2/eMMC. O initramfs abre shell pela UART serial; não há rootfs persistente.
+- **Ainda não testado na TV Box.** O QEMU usado não modela Allwinner H313, DRAM LPDDR3, U-Boot nem periféricos da X96Q; logo não comprova boot na placa. O DTS mínimo não habilita HDMI, Wi-Fi, Ethernet, Bluetooth nem MMC2/eMMC. Na revisão `v0.0.1-dev2`, o initramfs abre um menu de diagnóstico pela UART serial e ainda não há rootfs persistente.
 
 ## Build e teste
 
@@ -40,6 +40,8 @@ Veja também o [inventário de boot](docs/boot-chain-inventory.md) e o [plano de
 
 A imagem raw de ensaio e seu checksum estão anexados à [release privada `v0.0.1-dev`](https://github.com/Ronyzix/omw-os/releases/tag/v0.0.1-dev). **O download não significa que esteja pronta para uso:** foi testada apenas em QEMU ARM64 genérico, não na TV Box, e requer UART para saída. Leia o aviso completo da release antes de qualquer gravação.
 
+A revisão local `v0.0.1-dev2` está em `out/sd-test/OMW-X96Q-LPDDR3-v0.0.1-dev2.img` e tem checksum no relatório M1. Ela inclui menu serial e as três artes na partição FAT, mas não habilita HDMI; portanto não serve ainda para testar uma interface pela TV. Continua sendo uma imagem experimental, sem boot físico validado.
+
 
 ## Fase de identidade e hardware sem fio
 
@@ -54,4 +56,4 @@ O armazenamento do sandbox está com aproximadamente 3,5 GiB livres (verificaç�
 
 O [conceito da tela inicial OMW](assets/omw-home-screen-concept.png) mostra menu Início, Arquivos, Internet, Configurações, Desligar e atalhos para YouTube/Rave, com foco em leitura à distância e navegação por controle. É uma **imagem de referência**, não captura de uma interface executável.
 
-A GUI ainda depende da saída DRM/KMS/HDMI. O kernel fixado v6.18.1 não traz os nós H616 de display, e a proposta pública encontrada foi rejeitada por problemas na modelagem do hardware; o teste alternativo divulgado foi em H618, não na X96Q H313. Não habilitei essas patches nem gerei uma imagem nova. Os detalhes e critérios de teste estão em [hdmi-bring-up.md](docs/hdmi-bring-up.md).
+A GUI ainda depende da saída DRM/KMS/HDMI. O kernel fixado v6.18.1 não traz os nós H616 de display, e a proposta pública encontrada foi rejeitada por problemas na modelagem do hardware; o teste alternativo divulgado foi em H618, não na X96Q H313. Não habilitei essas patches. A imagem `v0.0.1-dev2` contém apenas o menu serial e referências visuais, não uma GUI. Os detalhes e critérios de teste estão em [hdmi-bring-up.md](docs/hdmi-bring-up.md).

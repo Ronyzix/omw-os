@@ -33,3 +33,22 @@ Nenhum comando escreveu em cartão físico ou armazenamento interno. `scripts/bu
 ## Reproduzir
 
 Com as fontes fixadas em `source-lock.txt` e dependências de compilação presentes, executar `scripts/build-firmware.sh`, `scripts/build-kernel.sh`, `scripts/build-initramfs.sh` e `scripts/build-sd-test-image.sh`. O teste genérico opcional é `scripts/test-qemu-initramfs.sh`. O builder monta o arquivo raw e valida MBR/FAT sem selecionar dispositivo de bloco.
+
+
+## Revisão `v0.0.1-dev2` — menu serial e ativos visuais
+
+A revisão `out/sd-test/OMW-X96Q-LPDDR3-v0.0.1-dev2.img` continua com 150.994.944 bytes (144 MiB). SHA-256: `52c1898d0d2ed9d45a63cf503fee0151f7c5120994da7a5a55270892af116507`. O arquivo de checksum correspondente fica ao lado. A imagem antiga `v0.0.1-dev.img` não foi sobrescrita.
+
+O `/init` no initramfs foi atualizado para exibir um menu em português pelo console serial: diagnóstico de leitura, terminal de diagnóstico, ajuda/limites, reiniciar e desligar. O diagnóstico mostra linha de boot, partições e montagens; não grava em armazenamento. A raiz segue no initramfs em RAM, não há rootfs persistente e o DTS continua usando apenas UART0 e MMC0 (SD removível), sem habilitar MMC2/eMMC.
+
+As três artes OMW foram copiadas à partição FAT em `/OMW/visuais/` e um `LEIA-ME.txt` explica que são referências, não uma GUI executável. O construtor lê os PNGs de volta do FAT e compara byte a byte. O espaço livre do FAT após a cópia foi de aproximadamente 72,8 MiB.
+
+### Verificações da revisão dev2
+
+- `bash -n` aprovou os scripts do initramfs, da imagem e do teste.
+- O smoke test automatizado iniciou o kernel e o initramfs em QEMU ARM64 `virt`, verificando o menu serial.
+- Uma sessão QEMU com entrada serial interativa exercitou diagnóstico, ajuda, abertura/saída do terminal e retorno ao menu.
+- Os três PNGs foram extraídos da imagem e comparados byte a byte com os originais.
+- MBR, limites da partição FAT, posição do U-Boot e checksum do arquivo foram verificados.
+
+Esses testes **não** emulam a X96Q H313, DRAM LPDDR3, boot ROM, U-Boot físico, HDMI ou Wi‑Fi. O kernel não tem uma cadeia DRM/KMS/HDMI funcional nesta placa. A imagem `v0.0.1-dev2` é somente um incremento de bring-up para quem dispõe de console serial; não é uma imagem com interface gráfica e não foi testada na TV Box.

@@ -30,7 +30,7 @@ cat > "$ROOTFS/etc/os-release" <<'EOF'
 NAME="OMW OS"
 ID=omw
 PRETTY_NAME="OMW OS bring-up"
-VERSION="0.0.1-dev"
+VERSION="0.0.1-dev2"
 EOF
 cat > "$ROOTFS/init" <<'EOF'
 #!/bin/busybox sh
@@ -39,12 +39,54 @@ export PATH
 mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
 mount -t proc proc /proc 2>/dev/null || true
 mount -t sysfs sysfs /sys 2>/dev/null || true
-printf '\nOMW OS bring-up initramfs\n'
-printf 'This shell runs from RAM. No SD/eMMC root filesystem is mounted.\n'
+printf '\nOMW OS 0.0.1-dev2 — inicializacao de teste\n'
+printf 'Menu de recuperacao pelo console serial.\n'
+printf 'Este sistema roda em RAM; nao monta nem grava o Android/eMMC.\n'
 printf 'Kernel command line: '
 cat /proc/cmdline 2>/dev/null || true
-printf '\nUART0 + MMC0 minimal test environment.\n'
-exec /bin/sh </dev/console >/dev/console 2>&1
+while :; do
+  printf '\nOMW — escolha uma opcao:\n'
+  printf '  1) Ver diagnostico (somente leitura)\n'
+  printf '  2) Abrir terminal\n'
+  printf '  3) Ajuda e limites desta imagem\n'
+  printf '  4) Reiniciar\n'
+  printf '  5) Desligar\n'
+  printf 'Opcao: '
+  IFS= read -r choice < /dev/console || choice=2
+  case "$choice" in
+    1)
+      printf '\nOMW — diagnostico\n'
+      printf 'Kernel: '; uname -a
+      printf 'Linha de boot: '; cat /proc/cmdline 2>/dev/null || true
+      printf '\nParticoes detectadas (leitura):\n'; cat /proc/partitions 2>/dev/null || true
+      printf '\nMontagens atuais:\n'; cat /proc/mounts 2>/dev/null || true
+      printf '\nA raiz e o initramfs em RAM; nenhum rootfs do eMMC foi montado.\n'
+      printf 'Pressione Enter para voltar ao menu. '
+      IFS= read -r _ < /dev/console || true
+      ;;
+    2)
+      printf '\nTerminal de diagnostico. Digite exit para voltar ao menu.\n'
+      /bin/sh -i </dev/console >/dev/console 2>&1
+      ;;
+    3)
+      printf '\nEsta imagem ainda nao tem HDMI/area de trabalho grafica nem Wi-Fi habilitado.\n'
+      printf 'Use somente como teste de boot serial; nao e uma imagem pronta para uso.\n'
+      printf 'Pressione Enter para voltar ao menu. '
+      IFS= read -r _ < /dev/console || true
+      ;;
+    4)
+      printf '\nReiniciando...\n'
+      /bin/busybox reboot -f
+      ;;
+    5)
+      printf '\nDesligando...\n'
+      /bin/busybox poweroff -f
+      ;;
+    *)
+      printf 'Opcao invalida. Digite um numero de 1 a 5.\n'
+      ;;
+  esac
+done
 EOF
 chmod 0755 "$ROOTFS/init"
 # The initramfs must contain console device before the kernel starts /init.
