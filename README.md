@@ -39,3 +39,12 @@ Veja também o [inventário de boot](docs/boot-chain-inventory.md) e o [plano de
 ## Imagem experimental para inspeção
 
 A imagem raw de ensaio e seu checksum estão anexados à [release privada `v0.0.1-dev`](https://github.com/Ronyzix/omw-os/releases/tag/v0.0.1-dev). **O download não significa que esteja pronta para uso:** foi testada apenas em QEMU ARM64 genérico, não na TV Box, e requer UART para saída. Leia o aviso completo da release antes de qualquer gravação.
+
+
+## Fase de identidade e hardware sem fio
+
+Foram criados dois conceitos visuais originais para orientar o futuro ambiente em português: [wallpaper OMW](assets/omw-wallpaper-orange-pink.png) e [conceito de inicialização](assets/omw-startup-concept.png). Eles ainda não estão integrados ao initramfs ou a uma interface gráfica. A direção de usabilidade está em [visual-ux-direction.md](docs/visual-ux-direction.md).
+
+O chip Wi-Fi da unidade física ainda não foi identificado. O arquivo de configuração corrente do Armbian `config/boards/x96q.tvb` ativa a extensão UWE5622/AW859A, enquanto há relatos e builds com módulos/necessidades diferentes; isso não comprova o chip da Proeletronic deste projeto. Veja [pesquisa de hardware Wi-Fi](docs/wifi-hardware-research.md). Por segurança, o DTS OMW continua sem nó Wi-Fi e não promete conectividade interna até haver evidência da placa.
+
+O armazenamento do sandbox está com aproximadamente 3,5 GiB livres (verificação de 2026-10-20). Por isso, não foi iniciada uma compilação completa ou de grande porte nesta etapa.
