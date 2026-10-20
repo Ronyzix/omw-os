@@ -35,3 +35,7 @@ A imagem é criada como arquivo regular em `out/sd-test/`. Nenhum script grava e
 O alvo declarado é uma Proeletronic X96Q H313 LPDDR3 v1.3. Não presumir que X96Q v5.1 DDR3L ou caixa Prosmart sejam a mesma placa. Próximo marco físico: testar em SD separado, com UART e pinout/nível elétrico confirmados, e verificar SPL/DRAM, U-Boot, kernel e initramfs. A imagem atual é experimental: não grave como sistema pronto. Só depois estabilizar o boot físico entram rootfs persistente, HDMI/periféricos e experiência de usuário.
 
 Veja também o [inventário de boot](docs/boot-chain-inventory.md) e o [plano de bring-up](docs/bring-up-plan.md).
+
+## Imagem experimental para inspeção
+
+A imagem raw de ensaio e seu checksum estão anexados à [release privada `v0.0.1-dev`](https://github.com/Ronyzix/omw-os/releases/tag/v0.0.1-dev). **O download não significa que esteja pronta para uso:** foi testada apenas em QEMU ARM64 genérico, não na TV Box, e requer UART para saída. Leia o aviso completo da release antes de qualquer gravação.
