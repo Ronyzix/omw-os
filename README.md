@@ -11,26 +11,27 @@ O BootROM físico do Allwinner H313 não é substituível: é parte do SoC. Para
 ## Progresso atual
 
 - **M0 — firmware:** TF-A v2.14.0 e U-Boot v2026.07 compilados para o perfil X96Q LPDDR3 v1.3. Build e hashes em [milestone M0](docs/milestone-m0-firmware.md).
-- **M1 — kernel/initramfs/imagem de ensaio:** Linux v6.18.1, DTS OMW mínimo (UART0 + MMC0), BusyBox estático e uma imagem raw de 144 MiB montada em arquivo sandbox. [Relatório M1 e checksums](docs/milestone-m1-kernel-image.md).
-- A imagem raw teve seu MBR/partição FAT, posição do U-Boot e conteúdo dos arquivos verificados offline; a repetição do empacotamento produziu o mesmo SHA-256.
-- **Não foi testada na TV Box e não foi emulada.** O sandbox não tem QEMU de sistema nesta sessão. Logo não alegamos que inicialize, nem que preserve comprovadamente o Android em um boot real, embora nenhum código atual escreva no armazenamento interno.
-- O DTS mínimo não habilita HDMI, Wi-Fi, Ethernet, Bluetooth nem MMC2/eMMC. O initramfs abre um shell pela UART serial; para primeiro teste físico é necessário console serial compatível. Ainda não há instalador para SD nem rootfs persistente.
+- **M1 — kernel/initramfs/imagem de ensaio:** Linux v6.18.1, DTS OMW mínimo (UART0 + MMC0), BusyBox estático e imagem raw de 144 MiB montada em arquivo sandbox. [Relatório M1 e checksums](docs/milestone-m1-kernel-image.md).
+- **QEMU genérico:** kernel e initramfs inicializaram juntos em `virt` ARM64 genérico e abriram o shell em RAM. Automatizado por `scripts/test-qemu-initramfs.sh`.
+- A imagem raw teve MBR/partição FAT, posição do U-Boot e conteúdo dos arquivos verificados offline; repetir o empacotamento produziu o mesmo SHA-256.
+- **Ainda não testado na TV Box.** O QEMU usado não modela Allwinner H313, DRAM LPDDR3, U-Boot nem periféricos da X96Q; logo não comprova boot na placa. O DTS mínimo não habilita HDMI, Wi-Fi, Ethernet, Bluetooth nem MMC2/eMMC. O initramfs abre shell pela UART serial; não há rootfs persistente.
 
-## Build
+## Build e teste
 
-Com as fontes fixadas em `source-lock.txt` e as ferramentas de compilação instaladas, executar nesta ordem:
+Com fontes em `source-lock.txt` e dependências de compilação instaladas:
 
 ```sh
 scripts/build-firmware.sh
 scripts/build-kernel.sh
 scripts/build-initramfs.sh
 scripts/build-sd-test-image.sh
+scripts/test-qemu-initramfs.sh  # emulação genérica, não H313
 ```
 
-A imagem resultante é criada como arquivo regular sob `out/sd-test/`. Nenhum dos scripts grava em `/dev/mmc*`, cartão físico ou armazenamento interno.
+A imagem é criada como arquivo regular em `out/sd-test/`. Nenhum script grava em `/dev/mmc*`, cartão físico ou armazenamento interno.
 
 ## Segurança e próximos marcos
 
-O alvo declarado é uma única Proeletronic X96Q H313 com LPDDR3 v1.3. Não presumir que X96Q v5.1 DDR3L ou caixa Prosmart sejam a mesma placa. Próximo marco: teste controlado em SD separado, com UART, verificando SPL/DRAM, U-Boot, kernel e initramfs. Só depois estabilizar MMC/rootfs, acrescentar saída HDMI e periféricos e trabalhar na experiência de instalação. Não grave a imagem atual como se fosse release pronta.
+O alvo declarado é uma Proeletronic X96Q H313 LPDDR3 v1.3. Não presumir que X96Q v5.1 DDR3L ou caixa Prosmart sejam a mesma placa. Próximo marco físico: testar em SD separado, com UART e pinout/nível elétrico confirmados, e verificar SPL/DRAM, U-Boot, kernel e initramfs. A imagem atual é experimental: não grave como sistema pronto. Só depois estabilizar o boot físico entram rootfs persistente, HDMI/periféricos e experiência de usuário.
 
 Veja também o [inventário de boot](docs/boot-chain-inventory.md) e o [plano de bring-up](docs/bring-up-plan.md).
